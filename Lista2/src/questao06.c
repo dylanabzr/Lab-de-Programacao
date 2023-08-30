@@ -3,16 +3,18 @@
 #define NUMC1 5
 #define NUMC2 7
 
-int votos(int voto, int *candidato1, int *candidato2, int *nulo){
-        if (voto == NUMC1)
+void votos(int voto, int *candidato1, int *candidato2, int *nulo){
+        switch(voto){
+	case NUMC1:
 		*candidato1+=1;
-	else if (voto == NUMC2)
+		break;
+	case NUMC2:
 		*candidato2+=1;
-	else if (voto < 0)
-		return 0;
-	else
+		break;
+	default:
 		*nulo+=1;
-	return 1;
+		break;
+	}
 }
 
 int main(){
@@ -21,7 +23,7 @@ int main(){
 		tmp = 0;
 		printf("Digite seu voto: ");
 		scanf("%d", &tmp);
-		if (!votos(tmp, &candidato1, &candidato2, &nulo)) break;
+		if (tmp<0) break;
 		else votos(tmp, &candidato1, &candidato2, &nulo);
         }
 	int votostotais = candidato1 + candidato2 + nulo;
@@ -32,5 +34,3 @@ int main(){
 		printf("Os candidatos empataram!\n");
 	return 0;
 }
-
-
