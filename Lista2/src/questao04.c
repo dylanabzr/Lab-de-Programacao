@@ -11,8 +11,8 @@ int main(){
 	  printf("Digite quantos centímetros ele cresce por ano: ");
 	  scanf("%d", &centimetros_por_ano[i]);
 	}
-	if (centimetros_por_ano[1] > centimetros_por_ano[0]) maior = 1;
-	for (anos = 0; (altura_centimetros[!maior] + centimetros_por_ano[!maior] * anos) >= (altura_centimetros[maior] + centimetros_por_ano[maior] * anos); anos++);
+	if (altura_centimetros[1] > altura_centimetros[0]) maior = 1;
+	for (anos = 0; (altura_centimetros[maior] + centimetros_por_ano[maior] * anos) >= (altura_centimetros[!maior] + centimetros_por_ano[!maior] * anos); anos++);
 	printf("em %d anos %s irá passar a altura de %s\n", anos, nome_pessoa[maior], nome_pessoa[!maior]);
 
 }
