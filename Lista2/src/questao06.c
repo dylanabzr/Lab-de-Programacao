@@ -4,20 +4,20 @@
 #define NUMC2 7
 
 void votos(int voto, int *candidato1, int *candidato2, int *nulo, int *brancos){
-        switch(voto){
-	case NUMC1:
-		*candidato1+=1;
-		break;
-	case NUMC2:
-		*candidato2+=1;
-		break;
-	case 0:
-		*brancos +=1;
-	default:
-		*nulo+=1;
-		break;
-	}
-}
+  switch(voto){
+    case NUMC1:
+      ++*candidato1;
+      break;
+    case NUMC2:
+      ++*candidato2;
+      break;
+    case 0:
+      ++*brancos;
+    default:
+      ++*nulo;
+      break;
+    }
+  }
 
 int main(){
 	int tmp, candidato1 = 0, candidato2 = 0, nulo = 0, brancos = 0;
@@ -34,7 +34,7 @@ int main(){
 		else votos(tmp, &candidato1, &candidato2, &nulo, &brancos);
         }
 	int votostotais = candidato1 + candidato2 + nulo + brancos;
-	printf("%.2f%% dos votos foram para Paulo, %.2f%% para Renata, %2.f%% foram votos brancos, %.2f%% foram votos nulos\n", (float)candidato1/votostotais*100, (float)candidato2/votostotais*100, (float)brancos/votostotais*100, (float)nulo/votostotais*100);
+	printf("%.2f%% dos votos foram para Paulo, %.2f%% para Renata, %.2f%% foram votos brancos, %.2f%% foram votos nulos\n", (float)candidato1/votostotais*100, (float)candidato2/votostotais*100, (float)brancos/votostotais*100, (float)nulo/votostotais*100);
 	if (candidato1 != candidato2)
 		printf("O(a) vencedor(a) foi %s\n", candidato1>candidato2?"Paulo":"Renata");
 	else
