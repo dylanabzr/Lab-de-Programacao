@@ -8,7 +8,7 @@ int main(){
     y >>= 1;
     if (y != x)
       printf("ligado = %d\n", i);
-    x = x << 1;
+    x <<= 1;
   }
   return 0;
 }
