@@ -36,7 +36,7 @@ int main (){
 		puts("Escolha um armário para liberar: ");
 			scanf("%hhu", &y);
 			if (verificar(armarios, y))
-				armarios ^= 1 << y;
+				armarios ^= MASK << y;
 	}
 	}
 }
