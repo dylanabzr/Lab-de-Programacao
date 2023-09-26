@@ -8,9 +8,9 @@ char verificar(char armario, char pos){
 }
 
 int main (){
-	unsigned char armarios = 0, done = 1, x, y;
+  unsigned char armarios = 0, done = 1, x, y;
   srand(time(NULL));
-	while(done){
+  while(done){
     system("clear");
     for (unsigned char i = 0; i < 8; i++){
       if (verificar(armarios, i))
