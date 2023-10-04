@@ -1,41 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 void criarVetorAleatorio(int *vetor, size_t tamanho){
+  srand(time(NULL));
 	for (int i = 0; i < tamanho; i++){
 		*(vetor+i) = rand()%100;
 	}
 }
 
-int *enderecoMaiorInteiro(int *vetor, size_t tamanho){
-	int maior = *vetor;
-	int *maior_endereco = NULL;
-	for (int i = 1; i < tamanho; i++){
-		if(*(vetor+i) >= maior) {
-			maior = *(vetor + i);
-			maior_endereco = vetor+i;
-		}
-	}
-	return maior_endereco;
-}
+int** enderecoMaiorMenor(int *vetor, size_t tamanho){
+	int **enderecos = NULL;
+  if(!(enderecos = malloc(sizeof(int*) * 2))){
+    fprintf(stderr, "Erro");
+    exit(1);
+  }
 
-int *enderecoMenorInteiro(int *vetor, size_t tamanho){
-	int menor = *vetor;
-	int *menor_endereco = NULL;
-	for (int i = 1; i < tamanho; i++){
-		if(*(vetor+i) <= menor) {
-			menor = *(vetor + i);
-			menor_endereco = vetor+i;
-		}
+  *enderecos = *(enderecos+1) = vetor;
+	for (int i = 0; i < tamanho; i++){
+		if(*(vetor+i) <= *(*enderecos)) *enderecos = vetor+i;
+    if(*(vetor+i) >= *(*(enderecos+1))) *(enderecos+1) = vetor+i;
 	}
-	return menor_endereco;
+  return enderecos;
 }
 int main(){
 	int n;
 	printf("Digite o tamanho do vetor; ");
 	scanf("%d", &n);
-	int *ptr = malloc(sizeof(int) * n);
-	if (!ptr){
+	int *ptr = NULL;
+	if (!(ptr = malloc(sizeof(int) * n))){
 		fprintf(stderr, "Erro, tamanho escolhido é muito grande.\n");
 		exit(1);
 	}
@@ -44,9 +37,8 @@ int main(){
 		printf("%d ", *(ptr+i));
 	}
 	puts("");
-	int *maior_ptr = enderecoMaiorInteiro(ptr, n); 
-	int *menor_ptr = enderecoMenorInteiro(ptr, n);
-	printf("O maior inteiro no vetor é: %d e seu endereço é %p\n", *maior_ptr, maior_ptr);
-	printf("O menor inteiro no vetor é: %d e seu endereço é %p\n", *menor_ptr, menor_ptr);
+	int **enderecos = enderecoMaiorMenor(ptr, n);
+	printf("O maior inteiro no vetor é: %d e seu endereço é %p\n", *(*(enderecos+1)), *(enderecos+1));
+	printf("O menor inteiro no vetor é: %d e seu endereço é %p\n", *(*enderecos), *enderecos);
 
 }
