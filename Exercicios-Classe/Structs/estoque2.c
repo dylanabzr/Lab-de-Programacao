@@ -18,8 +18,10 @@ struct Estoque{
 
 struct Produto *maior_preco(struct Estoque, int);
 void criarestoque(struct Estoque *, int);
+char* gerarUUID();
 
 int main(){
+  srand(time(NULL));
   int n;
   struct Estoque estoque;
   printf("Insira a quantidade de produtos: ");
@@ -39,25 +41,6 @@ struct Produto *maior_preco(struct Estoque estoque, int tamanho){
   return maior;
 }
 
-char* gerarUUID(){
-    char *buffer = NULL;
-    size_t buffer_size = 0;
-    if(!(buffer = malloc(sizeof(char) * 40))) exit(1);
-    FILE *pipe = popen("uuidgen -r", "r");
-    if (pipe == NULL) {
-        perror("popen");
-        exit(1);
-    }
-    ssize_t read;
-    while ((read = getline(&buffer, &buffer_size, pipe)) != -1) {
-        if (read > 0 && buffer[read - 1] == '\n') {
-            buffer[read - 1] = '\0';
-        }
-    }
-    pclose(pipe);
-    return buffer;
-}
-
 void criarestoque(struct Estoque *estoque, int tamanho){
   if(!(estoque->produtos = malloc(sizeof(struct Produto) * tamanho))) exit(1);
   if(!(estoque->qtd_por_produto = calloc(sizeof(int), tamanho))) exit(1);
@@ -73,3 +56,27 @@ void criarestoque(struct Estoque *estoque, int tamanho){
     printf("UUID gerado: %s\n", estoque->produtos[i].uuid);
   }
 }
+
+char* gerarUUID(){
+    char *buffer = malloc(37);
+    int tempnum;
+    char tempstr[15];
+
+    for (int i = 0; i < 8; i++) {
+      buffer[i] = "0123456789abcdef"[rand()%16];
+    }
+    for(int i = 0; i < 3; i++){
+      strcat(buffer, "-");
+      for(int j = 0; j < 4; j++){
+        buffer[9+i * 5 + j] = "0123456789abcdef"[rand()%16];
+      }
+    } 
+    strcat(buffer, "-");
+    for(int i = 0; i < 12; i++){
+      buffer[24+i] = "0123456789abcdef"[rand()%16];
+    }
+    buffer[36] = '\0';
+    return buffer;
+}
+
+
