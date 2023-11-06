@@ -59,8 +59,6 @@ void criarestoque(struct Estoque *estoque, int tamanho){
 
 char* gerarUUID(){
     char *buffer = malloc(37);
-    int tempnum;
-    char tempstr[15];
 
     for (int i = 0; i < 8; i++) {
       buffer[i] = "0123456789abcdef"[rand()%16];
