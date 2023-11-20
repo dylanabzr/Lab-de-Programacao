@@ -11,16 +11,17 @@ struct MemSpace{
 
 void createRandomMemorySpace(struct MemSpace *first, unsigned start, unsigned end);
 void printLinkedList(struct MemSpace *first);
-int addProcess_firstfit(struct MemSpace *head, size_t size);
-int addProcess_bestfit(struct MemSpace *head, size_t size);
+int addProcess_firstfit(struct MemSpace *head, size_t size, unsigned end);
+int addProcess_bestfit(struct MemSpace *head, size_t size, unsigned end);
 void freeLinkedList(struct MemSpace *head);
 
 int main(){
   srand(time(NULL));
   struct MemSpace head;
-  createRandomMemorySpace(&head, 0, 2000);
+  int max_address = 2000;
+  createRandomMemorySpace(&head, 0, max_address);
   printLinkedList(&head);
-  int (*addProcess[2])(struct MemSpace *head, size_t size) = {addProcess_firstfit, addProcess_bestfit};
+  int (*addProcess[2])(struct MemSpace *head, size_t size, unsigned end) = {addProcess_firstfit, addProcess_bestfit};
   int qtd = 1;
   int index = -1;
   while (index != 1 && index){
@@ -34,7 +35,7 @@ int main(){
     printf("Digite o quando de memoria você deseja alocar (0 para sair): ");
     scanf("%d", &qtd);
     if(qtd){
-      if(!(addProcess[index](&head, qtd))) puts("Não foi possível alocar em nenhum espaço.");
+      if(!(addProcess[index](&head, qtd, max_address))) puts("\n\t\tNão foi possível alocar em nenhum espaço.");
       puts("Lista atualizada: ");
       printLinkedList(&head);
     }
@@ -71,7 +72,7 @@ void createRandomMemorySpace(struct MemSpace *first, unsigned start, unsigned en
   }
 }
 
-int addProcess_firstfit(struct MemSpace *head, size_t size){
+int addProcess_firstfit(struct MemSpace *head, size_t size, unsigned end){
   for (struct MemSpace *i = head; i != NULL; i=i->next_space){
     if (!(i->isOccupied)){
       if (size < i->size){
@@ -94,42 +95,38 @@ int addProcess_firstfit(struct MemSpace *head, size_t size){
   return 0;
 }
 
-int addProcess_bestfit(struct MemSpace *head, size_t size){
-  int menor;
-  struct MemSpace * menor_ptr = head;
-  for (struct MemSpace *i = head; i != NULL; i=i->next_space){
-    if((i->size - size) > 0){
-      menor = i->size - size;
-      menor_ptr = i;
-      break;
-    }
-    else if (i->next_space == NULL){
-      return 0;
-    }
-  } 
-  for (struct MemSpace *i = head; i != NULL; i=i->next_space){
-    if (((i->size - size) < menor) && ((i->size - size) > 0)){
-      menor = i->size - size;
-      menor_ptr = i;
-    }
-  }
-  if (!(menor_ptr->isOccupied)){
-      if (menor){
-        struct MemSpace *n = malloc(sizeof(struct MemSpace));
-        n->next_space = menor_ptr->next_space;
-        menor_ptr->next_space = n;
-        n->size = menor;
-        menor_ptr->size = size;
-        n->start_address = menor_ptr->start_address + menor_ptr->size;
-        menor_ptr->isOccupied = 1;
-        n->isOccupied = 0;
-        return 1;
+int addProcess_bestfit(struct MemSpace *head, size_t size, unsigned end) {
+  if (size > end) return 0;
+  struct MemSpace *bestFit = NULL;
+  size_t menor = end;
+
+  for (struct MemSpace *i = head; i != NULL; i = i->next_space) {
+    if (!(i->isOccupied) && i->size >= size) {
+      size_t diferenca = i->size - size;
+      if (diferenca < menor) {
+        menor = diferenca;
+        bestFit = i;
       }
-      menor_ptr->isOccupied = 1;
-      return 1;
+    }
   }
+
+  if (bestFit != NULL) {
+    if (menor > 0) {
+      struct MemSpace *newSpace = malloc(sizeof(struct MemSpace));
+      newSpace->next_space = bestFit->next_space;
+      bestFit->next_space = newSpace;
+      newSpace->size = menor;
+      newSpace->start_address = bestFit->start_address + size;
+      newSpace->isOccupied = 0;
+    }
+    bestFit->size = size;
+    bestFit->isOccupied = 1;
+    return 1;
+  }
+
   return 0;
 }
+
 
 void freeLinkedList(struct MemSpace *head){
   struct MemSpace * next_ptr = head->next_space;
