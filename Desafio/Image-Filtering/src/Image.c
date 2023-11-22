@@ -1,47 +1,51 @@
 #include "../include/Image.h"
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
+struct Image readPGM(const char *filename) {
+    struct Image img;
+    FILE *file;
+    char type[3];
+    int maxVal;
 
-#include "../include/stb_image.h"
-#include "../include/stb_image_write.h"
+    file = fopen(filename, "rb"); // Abre o arquivo PGM em modo de leitura binária
 
-void Image(struct Image* image, int w, int h, int channels){
-  image->w = w;
-  image->h = h;
-  image->channels = channels;
-  image->size = w * h * channels;
+    if (file == NULL) {
+        fprintf(stderr, "Não foi possível abrir o arquivo.\n");
+        exit(1);
+    }
+
+    fscanf(file, "%2s", type); // Lê o tipo de arquivo PGM
+
+    if (strcmp(type, "P5") != 0) { // Verifica se o tipo de arquivo é P5 (PGM binário)
+        fprintf(stderr, "Formato de arquivo não suportado. Este não é um arquivo PGM do tipo P5.\n");
+        exit(1);
+    }
+
+
+    fscanf(file, "%d %d\n%d\n", &img.w, &img.h, &maxVal);
+
+    img.channels = 1; // Para PGM, é uma imagem em tons de cinza (um canal)
+
+    img.size = img.w * img.h * img.channels;
+    img.data = (unsigned char *)malloc(img.size * sizeof(unsigned char));
+
+    fread(img.data, sizeof(unsigned char), img.size, file); // Lê os dados dos pixels
+
+    fclose(file);
+    return img;
 }
 
-void freeIMG(struct Image *image){
-  return stbi_image_free(image->data);
-}
-bool read(const char *filename, struct Image *image){
-  image->data = stbi_load(filename, &(image->w), &(image->h), &(image->channels), 0);
-  return image->data != NULL;
-}
+void savePGM(const char *filename, const struct Image *img) {
+    FILE *file = fopen(filename, "wb"); // Abre o arquivo PGM em modo de escrita binária
 
-ImageType getFileType(const char* filename){
-  const char *extension = strrchr(filename, '.');
-  if (extension != NULL){
-    if (!strcmp(extension, ".jpg")) return JPG;
-    else if (!strcmp(extension, ".bmp")) return BMP;
-  }
-  return PNG;
-}
+    if (file == NULL) {
+        fprintf(stderr, "Não foi possível abrir o arquivo para escrita.\n");
+        exit(1);
+    }
 
-bool write(const char *filename, struct Image *image){
-  ImageType type = getFileType(filename);
-  int success = 0;
-  switch(type){
-    case PNG:
-      success = stbi_write_png(filename, image->w, image->h, image->channels, image->data, image->w * image->channels);
-      break;
-    case JPG:
-      success = stbi_write_jpg(filename, image->w, image->h, image->channels, image->data, 100);
-      break;
-    case BMP:
-      success = stbi_write_bmp(filename, image->w, image->h, image->channels, image->data);
-      break;
-  }
-  return success != 0;
+    // Escreve o cabeçalho do arquivo PGM
+    fprintf(file, "P5\n%d %d\n255\n", img->w, img->h);
+
+    // Escreve os dados dos pixels
+    fwrite(img->data, sizeof(unsigned char), img->size, file);
+
+    fclose(file);
 }
