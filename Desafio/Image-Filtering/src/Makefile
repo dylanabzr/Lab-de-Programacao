@@ -1,2 +1,2 @@
 build:
-	gcc main.c Image.c -o imagefilter -lm
+	gcc *.c -o imagefilter -lm
